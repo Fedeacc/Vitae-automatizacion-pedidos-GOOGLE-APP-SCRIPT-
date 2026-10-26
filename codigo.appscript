@@ -1,0 +1,36 @@
+// ID de la carpeta de Drive donde se guardan las fotos de los pedidos
+const FOLDER_ID = "TU_ID_DE_CARPETA";
+
+function doPost(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+
+  try {
+    const data = JSON.parse(e.postData.contents);
+
+    // 1. Guardar la foto en Drive
+    const folder = DriveApp.getFolderById(FOLDER_ID);
+    const bytes = Utilities.base64Decode(data.archivoBase64);
+    const blob = Utilities.newBlob(bytes, "image/jpeg", data.nombreArchivo);
+    const linkFoto = folder.createFile(blob).getUrl();
+
+    // 2. Registrar el pedido en la planilla
+    sheet.appendRow([
+      new Date(),
+      data.nombre,
+      "'" + data.whatsapp, // el apóstrofe evita que Sheets rompa el número largo
+      data.pedido,
+      data.tipoPago,
+      data.monto,
+      "Pendiente",
+      linkFoto
+    ]);
+
+    return ContentService.createTextOutput(JSON.stringify({ result: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ result: "error", error: error.toString() })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+}
