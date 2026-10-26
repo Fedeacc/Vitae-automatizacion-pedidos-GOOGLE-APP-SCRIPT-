@@ -1,6 +1,7 @@
 # Automatización de pedidos – Google Apps Script
 
 Backend del emprendimiento Vitae.Lp. Recibe los pedidos enviados desde la página web y los registra automáticamente, sin carga manual.
+Aplicado solamente en la version 1 de la pagina (pagina.vitae-1.0).
 
 ## Qué hace
 
